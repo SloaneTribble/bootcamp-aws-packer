@@ -18,15 +18,20 @@ JAR_PATH=$(find /home/ec2-user/spring-petclinic/target -name '*.jar' -print -qui
 cat <<EOF | sudo tee /etc/systemd/system/spring-petclinic.service > /dev/null
 [Unit]
 Description=Spring PetClinic Application
+
+# network should be up before starting this service
 After=network.target
 
 [Service]
+# user under which the service will run
 User=ec2-user
 WorkingDirectory=/home/ec2-user/spring-petclinic
 ExecStart=/bin/java -jar $JAR_PATH
+# 143 indicates SIGTERM; Java apps typically respond to SIGTERM by shutting down and returning 143
 SuccessExitStatus=143
 
 [Install]
+# Specifies that this service should start when the system reaches the multi-user runlevel
 WantedBy=multi-user.target
 EOF
 
